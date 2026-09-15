@@ -1,4 +1,12 @@
+HOW TO LAUNCH-
+
+OPEN UP  "game 2.py"
+
+
 This is a weather simulator for my project that I've made for my computer science CTE class. Expect it to be buggy.
+
+
+
 
 
 The following images I have used from other sources.
