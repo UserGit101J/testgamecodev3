@@ -76,6 +76,7 @@ pygame.init()
 
 game_state = 'START'
 score = 0
+health = 100
 
 font = pygame.font.Font(None, 30)
 title_font = pygame.font.Font(None, 60)
@@ -96,8 +97,9 @@ obstacle_group = pygame.sprite.Group()
 
 
 def reset_game():
-    global score
+    global score, health
     score = 0
+    health = 100
     player.sprite.rect.midbottom = (100, 360)
     player.sprite.gravity = 0
     target_group.empty()
@@ -111,12 +113,9 @@ while True:
             exit()
 
         if event.type == pygame.MOUSEBUTTONDOWN or (event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE):
-            if game_state == 'START':
-                reset_game()
-                game_state = 'PLAYING'
-            elif game_state == 'END':
-                reset_game()
-                game_state = 'PLAYING'
+            if game_state in ('START', 'END'):
+                reset_game()    
+                game_state = 'PLAYING'  
 
     screen.blit(ground, (0, 350))   
     screen.blit(sky, (0, -250))
@@ -152,19 +151,29 @@ while True:
         obstacle_group.update()
 
         if pygame.sprite.spritecollide(player.sprite, obstacle_group, True):
-            score -= 1
+            health -= 10
 
         if not obstacle_group:
             obstacle_group.add(Obstacle())
 
         score_surface = font.render(f'Score: {score}', True, (0, 0, 0))
+        health_surface = font.render(f'Health: {health}', True, (0, 0, 0))
+        
         screen.blit(score_surface, (10, 10))
+        screen.blit(health_surface, (140, 10))
 
-        if score >= 5:
+        if score >= 5 or health <= 0:
             game_state = 'END'
 
     elif game_state == 'END':
-        end_surf = title_font.render("You Win!", True, (0, 128, 0))
+        if health <= 0:
+            end_text = "Game Over"
+            end_color = (200, 0, 0)
+        else:
+            end_text = "You Win!"
+            end_color = (0, 128, 0)
+
+        end_surf = title_font.render(end_text, True, end_color)
         end_rect = end_surf.get_rect(center=(400, 140))
 
         score_surf = font.render(f"Final Score: {score}", True, (0, 0, 0))
